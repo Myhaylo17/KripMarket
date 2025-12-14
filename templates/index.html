@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>КріпМаркет - Інтернет-магазин кріпильних виробів</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="static/style.css">
+    <style>
+
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="shadow-lg">
+        <div class="header-content">
+            <div class="logo">
+                <a href="/"><span class="logo-icon">🔩</span> <h1>Старок</h1></a>.
+            </div>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+        </div>
+    </header>
+
+    <!-- Navigation (Menu) - ПРЯМІ ПОСИЛАННЯ -->
+    <nav id="nav" class="hidden md:block">
+        <div class="nav-content">
+            <ul class="nav-list">
+                <a href="/static/templates_category/bolt.html">🔩 Болти</a>
+                <a href="/static/templates_category/nut.html">⬡ Гайки</a>
+                <a href="/static/templates_category/self-tapping.html">🔨 Саморізи</a>
+                <a href="/static/templates_category/rigging.html">⚓ Такелаж</a>
+                <a href="/static/templates_category/puck.html">💿 Шайби</a>
+                <a href="/static/templates_category/pin.html">📏 Шпильки</a>
+                <a href="/static/templates_category/screws.html">🪛 Шурупи</a>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content (Home Page) -->
+    <main class="container mx-auto p-4 md:p-8 flex-grow">
+        <h2 class="page-title text-3xl font-bold text-gray-800 mb-6 text-center">Популярні товари</h2>
+        <div class="products-grid" id="productsGrid">
+            <!-- Картки продуктів будуть тут -->
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-main">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                        </svg>
+                        <a href="tel:+380679025518">+380679025518</a>
+                    </div>
+                    <div class="contact-item">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                        <a href="mailto:andreas.zartmet@gmail.com">andreas.zartmet@gmail.com</a>
+                    </div>
+                </div>
+                <div class="social-links">
+                    <a href="https://t.me/kripmarket" target="_blank" class="social-btn">TG</a>
+                    <a href="viber://chat?number=380123456789" class="social-btn">VB</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 Старок. Всі права захищені.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script >
+   const products = [
+        {
+            id: 1,
+            name: 'Болт з шестиграною головкою, оцинкований',
+            image: '/static/images/bolt.jpg',
+            category: 'bolts'
+        },
+        {
+            id: 2,
+            name: 'Гайка DIN934',
+            image: '/static/images/6_0004.jpeg',
+            category: 'nuts'
+        },
+        {
+            id: 3,
+            name: 'Саморіз з напівкруглою головкою',
+            image: '/static/images/саморізjpg.jpg',
+            category: 'screws'
+        },
+        {
+            id: 4,
+            name: 'Шайба',
+            image: '/static/images/шайба.jpg',
+            category: 'washers'
+        },
+        {
+            id: 5,
+            name: 'Шпилька DIN976',
+            image: '/static/images/шпилька976.jpg',
+            category: 'bolts'
+        },
+        {
+            id: 6,
+            name: 'Болт з грибною головкою, оцинкований',
+            image: '/static/images/болт_гриб_гол.jpg',
+            category: 'nuts'
+        },
+        {
+            id: 7,
+            name: 'Шуруп універсальний',
+            image: '/static/images/шуруп_універсальнйи.jpg',
+            category: 'screws'
+        },
+        {
+            id: 8,
+            name: 'Саморіз для ГК',
+            image: '/static/images/саморіз_гк.jpg',
+            category: 'washers'
+        }
+    ];
+
+    function renderProducts(productsList) {
+        const container = document.querySelector('#productsGrid');
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        productsList.forEach(product => {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+
+            let imageContent;
+
+            if (
+                product.image &&
+                (
+                    product.image.startsWith('/') ||
+                    product.image.startsWith('http') ||
+                    product.image.startsWith('data:')
+                )
+            ) {
+                imageContent = `
+                    <img
+                        src="${product.image}"
+                        alt="${product.name}"
+                        onerror="this.src='/static/img/placeholder.png'; this.onerror=null;"
+                    >
+                `;
+            } else {
+                imageContent = product.image;
+            }
+
+            card.innerHTML = `
+                <div class="product-image">
+                    ${imageContent}
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name font-semibold text-xl mb-1">
+                        ${product.name}
+                    </h3>
+                    <div>
+                        <a href="product.html?id=${product.id}" class="buy-btn">
+                            Купити
+                        </a>
+                    </div>
+                </div>
+            `;
+
+            container.appendChild(card);
+        });
+    }
+
+    function toggleMobileMenu() {
+        const nav = document.getElementById('nav');
+        if (!nav) return;
+
+        nav.classList.toggle('hidden');
+        nav.classList.toggle('mobile-open');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        renderProducts(products);
+    });
+    </script>
+
+</body>
+</html>

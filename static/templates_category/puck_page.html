@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Старок | Деталі Шайби</title>
+    <!-- Підключення Tailwind CSS для адаптивного дизайну -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Базові стилі та адаптивність */
+        body { font-family: 'Inter', sans-serif; background-color: #fcfcfc; }
+        .hidden { display: none !important; }
+
+        /* HEADER та МЕНЮ (Жовто-Помаранчеві кольори) */
+        header { background-color: #fcd34d; /* Tailwind amber-300 */ }
+        .header-content { max-width: 1280px; margin: 0 auto; padding: 1rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo a {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .logo a h1 { color: #333; font-size: 2.25rem; font-weight: 700; line-height: 1; }
+        .logo-icon { font-size: 2.5rem; color: #f59e0b; }
+
+        /* Product Detail Styles */
+        .product-detail-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; max-width: 1000px; margin: 0 auto; }
+        @media (min-width: 768px) {
+            .product-detail-grid { grid-template-columns: 40% 60%; } /* Збільшена ліва частина для фото */
+        }
+
+        .product-main-image {
+            font-size: 10rem; /* Велике фото */
+            line-height: 1;
+            text-align: center;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 0 0 2px #f59e0b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .product-main-image img {
+             width: 100%;
+             height: auto;
+             max-height: 350px;
+             object-fit: contain;
+        }
+
+        /* Посилання Назад до каталогу - гірчичний колір */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            color: #f59e0b;
+            transition: color 0.2s;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        .back-btn:hover { color: #d97706; }
+
+        /* Form Styles */
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 0.25rem; }
+        .form-group input, .form-group select { width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; }
+
+        .confirm-btn { background-color: #f59e0b; color: white; padding: 1rem 1.5rem; font-size: 1.25rem; font-weight: 700; border-radius: 0.25rem; width: 100%; transition: background-color 0.2s; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); margin-top: 1.5rem; }
+        .confirm-btn:hover { background-color: #d97706; }
+
+        /* FOOTER (Чорний/Темний колір) */
+        footer { background-color: #000; color: white; padding: 2rem 0 1rem; margin-top: auto; }
+        .footer-content { max-width: 1280px; margin: 0 auto; padding: 0 1rem; padding-left: 2rem; padding-right: 2rem; }
+        .footer-main { display: flex; justify-content: space-between; align-items: center; padding-bottom: 1.5rem; border-bottom: 1px solid #222; }
+        .contact-info { display: flex; flex-direction: column; gap: 0.5rem; }
+        .contact-item svg { margin-right: 0.5rem; color: #f59e0b; }
+        .contact-item a { color: white; text-decoration: none; transition: color 0.2s; }
+        .contact-item a:hover { color: #f59e0b; }
+        .social-links { display: flex; gap: 1rem; }
+        .social-btn { background-color: #f59e0b; color: black; padding: 0.5rem 1rem; border-radius: 9999px; font-weight: 700; text-decoration: none; transition: opacity 0.2s; }
+        .social-btn:hover { opacity: 0.8; }
+        .footer-bottom { text-align: center; font-size: 0.875rem; color: #aaa; margin-top: 1rem; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+    <!-- Custom Modal Window for Confirmation -->
+    <div id="orderModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-lg shadow-2xl max-w-sm w-full text-center">
+            <svg class="w-16 h-16 text-green-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <h3 class="text-2xl font-bold mb-3">Замовлення підтверджено!</h3>
+            <p class="text-gray-700">Ваші дані відправлено на сервер. Ми зв'яжемося з вами найближчим часом.</p>
+            <button onclick="closeModal()" class="mt-5 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition">
+                Закрити
+            </button>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="shadow-lg">
+        <div class="header-content">
+            <div class="logo">
+                <!-- Посилання на Головну сторінку через кореневий роут FastAPI (/) -->
+                <a href="/" class="flex items-center gap-2">
+                    <span class="logo-icon">🔩</span>
+                    <h1>Старок</h1>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content (Product Detail Page) -->
+    <main class="p-4 md:p-8 flex-grow">
+        <!-- Кнопка Назад - гірчичний колір -->
+        <a href="#" onclick="history.back(); return false;" class="back-btn">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Назад до каталогу
+        </a>
+
+        <div class="product-detail-grid">
+            <!-- Блок з фото -->
+            <div class="flex flex-col items-center">
+                <div class="product-main-image shadow-lg" id="productMainImage">
+                    <p class="text-base text-gray-500">Завантаження фото...</p>
+                </div>
+            </div>
+
+            <!-- Блок з інформацією та формою -->
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h2 class="text-4xl font-extrabold text-gray-900 mb-2" id="productTitle">Завантаження...</h2>
+                <p class="text-5xl font-extrabold text-red-600 mb-6" id="productPrice">Ціна: 0.00 грн</p>
+
+                <div class="product-description mb-6">
+                    <h3 class="text-xl font-semibold mb-2 text-gray-800">Опис товару:</h3>
+                    <p id="productDescription" class="text-gray-700"></p>
+                </div>
+
+                <!-- ФОРМА ЗАМОВЛЕННЯ -->
+                <form id="orderForm" onsubmit="handleOrderSubmit(event)">
+                    <h3 class="text-2xl font-bold mb-4 text-gray-800 border-b pb-2">Оформлення замовлення</h3>
+
+                    <!-- Вибір Розміру (ЦІНА ЗАЛЕЖИТЬ ВІД НЬОГО) -->
+                    <div class="form-group">
+                        <label for="productSize">Розмір:</label>
+                        <select id="productSize" required onchange="updatePrice()">
+                            <!-- Опції розмірів будуть вставлені JS -->
+                        </select>
+                    </div>
+
+                    <!-- Кількість -->
+                    <div class="form-group">
+                        <label for="productQuantity">Кількість:</label>
+                        <input type="number" id="productQuantity" value="1" min="1" required oninput="updatePrice()">
+                    </div>
+
+                    <!-- ПІБ -->
+                    <div class="form-group">
+                        <label for="clientName">ПІБ:</label>
+                        <input type="text" id="clientName" placeholder="Іванов Іван Іванович" required>
+                    </div>
+
+                    <!-- Номер телефону -->
+                    <div class="form-group">
+                        <label for="clientPhone">Номер телефону:</label>
+                        <input type="tel" id="clientPhone" placeholder="+380 (XX) XXX XX XX" required>
+                    </div>
+
+                    <!-- Кнопка Підтвердити -->
+                    <button type="submit" class="confirm-btn">
+                        Підтвердити замовлення
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-main">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7  2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                        </svg>
+                        <a href="tel:+380679025518">+380679025518</a>
+                    </div>
+                    <div class="contact-item">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                        <a href="mailto:andreas.zartmet@gmail.com">andreas.zartmet@gmail.com</a>
+                    </div>
+                </div>
+                <div class="social-links">
+                    <a href="https://t.me/kripmarket" target="_blank" class="social-btn">TG</a>
+                    <a href="viber://chat?number=380123456789" class="social-btn">VB</a>
+                </div>
+            </div>
+            <div class="footer-bottom text-sm mt-2">
+                <p>© 2025 КріпМаркет. Всі права захищені.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT ЛОГІКА -->
+    <script>
+        let currentProduct = null;
+
+        // Масив усіх продуктів (повний список, необхідний для пошуку за ID)
+        const allProducts = [
+            // ID 1: Шайба збільшена DIN 9021
+            {
+                id: 1,
+                name: 'Шайба збільшена DIN 9021',
+                basePrice: 0.50,
+                image: '/static/images/шайба.jpg',
+                description: 'Шайба плоска збільшена DIN 9021, оцинкована. Ціна вказана за кілограм.',
+                sizes: [
+                    // Шайба 10
+                    { name: 'Шайба збільш DIN 9021 10 (1кг=92шт)', price: 87.50 },
+                    { name: 'Шайба збільш DIN 9021 10 (1кг=92шт) (2)', price: 91.50 },
+                    { name: 'Шайба збільш DIN 9021 10 (1кг=92шт) (3)', price: 109.80 },
+                    { name: 'Шайба збільш DIN 9021 10 (1кг=92шт) (4)', price: 101.50 },
+
+                    // Шайба 12
+                    { name: 'Шайба збільш DIN 9021 12 (1кг=48шт)', price: 91.50 },
+                    { name: 'Шайба збільш DIN 9021 12 (1кг=48шт) (2)', price: 87.50 },
+                    { name: 'Шайба збільш DIN 9021 12 (1кг=48шт) (3)', price: 109.80 },
+                    { name: 'Шайба збільш DIN 9021 12 (1кг=48шт) (4)', price: 101.50 },
+
+                    // Шайба 14
+                    { name: 'Шайба збільш DIN 9021 14 (1кг=32шт)', price: 91.50 },
+                    { name: 'Шайба збільш DIN 9021 14 (1кг=32шт) (2)', price: 87.50 },
+                    { name: 'Шайба збільш DIN 9021 14 (1кг=32шт) (3)', price: 109.80 },
+                    { name: 'Шайба збільш DIN 9021 14 (1кг=32шт) (4)', price: 101.50 },
+
+                    // Шайба 16
+                    { name: 'Шайба збільш DIN 9021 16', price: 91.50 },
+                    { name: 'Шайба збільш DIN 9021 16 (2)', price: 87.50 },
+                    { name: 'Шайба збільш DIN 9021 16 (3)', price: 109.80 },
+                    { name: 'Шайба збільш DIN 9021 16 (4)', price: 101.50 },
+
+                    // Шайба 18
+                    { name: 'Шайба збільш DIN 9021 18', price: 91.50 },
+                    { name: 'Шайба збільш DIN 9021 18 (2)', price: 87.50 },
+                    { name: 'Шайба збільш DIN 9021 18 (3)', price: 109.80 },
+                    { name: 'Шайба збільш DIN 9021 18 (4)', price: 91.50 },
+
+                    // Шайба 20
+                    { name: 'Шайба збільш DIN 9021 20', price: 91.50 },
+                    { name: 'Шайба збільш DIN 9021 20 (2)', price: 87.50 },
+                    { name: 'Шайба збільш DIN 9021 20 (3)', price: 109.80 },
+                    { name: 'Шайба збільш DIN 9021 20 (4)', price: 101.50 },
+
+                    // Шайба 24
+                    { name: 'Шайба збільш DIN 9021 24', price: 103.50 },
+                    { name: 'Шайба збільш DIN 9021 24 (2)', price: 91.50 },
+
+                    // Шайба 5
+                    { name: 'Шайба збільш DIN 9021 5', price: 124.90 },
+
+                    // Шайба 6
+                    { name: 'Шайба збільш DIN 9021 6 (1кг=416шт)', price: 99.50 },
+                    { name: 'Шайба збільш DIN 9021 6 (1кг=416шт) (2)', price: 90.90 },
+                    { name: 'Шайба збільш DIN 9021 6 (1кг=416шт) (3)', price: 122.50 },
+                    { name: 'Шайба збільш DIN 9021 6 (1кг=416шт) (4)', price: 109.50 },
+
+                    // Шайба 8
+                    { name: 'Шайба збільш DIN 9021 8 (1кг=177шт)', price: 91.50 },
+                    { name: 'Шайба збільш DIN 9021 8 (1кг=177шт) (2)', price: 87.50 },
+                    { name: 'Шайба збільш DIN 9021 8 (1кг=177шт) (3)', price: 109.80 },
+                    { name: 'Шайба збільш DIN 9021 8 (1кг=177шт) (4)', price: 101.50 },
+                ],
+                category: 'puck'
+            },
+        ];
+
+        /**
+         * 1. Отримує ID продукту з URL.
+         */
+        function getProductIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = parseInt(urlParams.get('id'));
+
+            // Тут ми використовуємо ID 1 як заглушку, якщо в URL немає ID.
+            if (!productId) {
+                 console.warn("ID продукту не знайдено в URL. Використано тестовий ID 1.");
+                 return 1;
+            }
+            return productId;
+        }
+
+        /**
+         * Оновлює відображення ціни на основі обраного розміру та кількості.
+         */
+        function updatePrice() {
+            if (!currentProduct) return;
+
+            const sizeSelect = document.getElementById('productSize');
+            const quantityInput = document.getElementById('productQuantity');
+
+            const selectedSizeName = sizeSelect.value;
+            const quantity = parseInt(quantityInput.value) || 0;
+
+            const selectedSize = currentProduct.sizes.find(s => s.name === selectedSizeName);
+            const pricePerUnit = selectedSize ? selectedSize.price : 0;
+
+            const total = pricePerUnit * quantity;
+
+            document.getElementById('productPrice').textContent = `Ціна: ${total.toFixed(2)} грн`;
+        }
+
+        /**
+         * 2. Заповнює сторінку деталями продукту.
+         */
+        function loadProductDetails() {
+            const productId = getProductIdFromUrl();
+            if (!productId) {
+                document.getElementById('productTitle').textContent = "Помилка завантаження ID";
+                return;
+            }
+
+            currentProduct = allProducts.find(p => p.id === productId);
+
+            if (!currentProduct) {
+                document.getElementById('productTitle').textContent = "Продукт не знайдено";
+                return;
+            }
+
+            // Заповнення основної інформації
+            document.getElementById('productTitle').textContent = currentProduct.name;
+            document.getElementById('productDescription').textContent = currentProduct.description;
+
+            // Заповнення зображення
+            const mainImageContainer = document.getElementById('productMainImage');
+            if (currentProduct.image) {
+                 const imagePath = currentProduct.image;
+                 // Використовуємо абсолютний шлях
+                 const absoluteImagePath = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
+
+                 mainImageContainer.innerHTML = `<img src="${absoluteImagePath}" alt="${currentProduct.name}" onerror="this.src='../static/img/placeholder.png'; this.onerror=null;">`;
+            } else {
+                 mainImageContainer.innerHTML = currentProduct.image || '🔩';
+            }
+
+            // Заповнення вибору розміру
+            const sizeSelect = document.getElementById('productSize');
+            if (sizeSelect && currentProduct.sizes) {
+                sizeSelect.innerHTML = '';
+
+                const uniqueNames = new Set();
+
+                currentProduct.sizes.forEach(size => {
+                    const cleanName = size.name.replace(/\s\(\d+\)$/g, '').replace(/\s\(\d+\w+=\d+\sшт\)/g, '').trim();
+
+                    if (!uniqueNames.has(cleanName)) {
+                        uniqueNames.add(cleanName);
+
+                        const option = document.createElement('option');
+                        option.value = size.name;
+                        option.textContent = cleanName;
+                        sizeSelect.appendChild(option);
+                    }
+                });
+            }
+
+            // Оновлюємо початкову ціну після завантаження розмірів
+            updatePrice();
+        }
+
+        /**
+         * 3. Обробка форми та відправка даних до MySQL через FastAPI.
+         */
+        async function handleOrderSubmit(event) {
+            event.preventDefault();
+
+            if (!currentProduct) return;
+
+            // Збір даних форми
+            const sizeSelect = document.getElementById('productSize');
+            const quantityInput = document.getElementById('productQuantity');
+            const nameInput = document.getElementById('clientName');
+            const phoneInput = document.getElementById('clientPhone');
+
+            const selectedSizeName = sizeSelect.value;
+            const quantity = parseInt(quantityInput.value) || 0;
+            const clientName = nameInput.value;
+            const clientPhone = phoneInput.value;
+
+            const selectedSize = currentProduct.sizes.find(s => s.name === selectedSizeName);
+            const pricePerUnit = selectedSize ? selectedSize.price : 0;
+
+            // Використовуємо parseFloat для ціни та округлюємо до 2 знаків
+            const total = parseFloat((pricePerUnit * quantity).toFixed(2));
+
+            if (quantity <= 0) {
+                 // Відображення помилки через модальне вікно
+                 document.getElementById('modalTitle').textContent = "Помилка замовлення";
+                 document.getElementById('modalMessage').textContent = "Кількість має бути більше нуля.";
+                 document.getElementById('modalIcon').style.color = '#dc3545'; // Red color
+                 showModal();
+                 return;
+            }
+
+            // Створення об'єкта даних, який відповідає Pydantic схемі на FastAPI
+            const orderData = {
+                'client_name': clientName,
+                'client_phone': clientPhone,
+                'product_name': currentProduct.name,
+                'product_size': selectedSizeName,
+                'quantity': quantity,
+                'total_price': total, // Відправляємо Float
+            };
+
+            // Відправка даних у FastAPI
+            const success = await sendOrderToBackend(orderData);
+
+            // Очищення форми
+            if (success) {
+                document.getElementById('orderForm').reset();
+            }
+
+            // 4. Показати модальне вікно
+            if (success) {
+                document.getElementById('modalTitle').textContent = "Замовлення підтверджено!";
+                document.getElementById('modalMessage').textContent = "Дякуємо за ваше замовлення.Ми з вами обов'язково зв'яжемось";
+                document.getElementById('modalIcon').style.color = '#10b981'; // Green color
+            } else {
+                // Якщо помилка прийшла, ми вже вивели її в консоль, але також відображаємо користувачу
+                document.getElementById('modalTitle').textContent = "Помилка сервера (Не збережено)";
+                document.getElementById('modalMessage').textContent = "Виникла помилка при збереженні даних у БД. Перевірте консоль FastAPI.";
+                document.getElementById('modalIcon').style.color = '#dc3545'; // Red color
+            }
+            showModal();
+        }
+
+        /**
+         * Фактична функція для відправки даних до FastAPI.
+         */
+        async function sendOrderToBackend(data) {
+             const ORDER_API_ENDPOINT = '/api/orders/';
+             console.log("--- Відправка даних до FastAPI API ---");
+             console.log(JSON.stringify(data, null, 2));
+
+             try {
+                const response = await fetch(ORDER_API_ENDPOINT, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                // Перевіряємо статус HTTP відповіді
+                if (response.ok) {
+                    console.log("Дані успішно відправлено та збережено в БД.");
+                    return true;
+                } else {
+                    const errorData = await response.json();
+                    console.error(`Помилка від FastAPI (Status: ${response.status}):`, errorData);
+                    // Додамо детальну інформацію про помилку Pydantic
+                    if (response.status === 422 && errorData.detail) {
+                         console.error("Деталі помилки Pydantic (422):", JSON.stringify(errorData.detail, null, 2));
+                    }
+                    return false;
+                }
+
+             } catch (error) {
+                 console.error("Помилка мережі при відправці до FastAPI:", error);
+                 return false;
+             }
+        }
+
+        /**
+         * Функції для керування модальним вікном.
+         */
+        function showModal() {
+            document.getElementById('orderModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('orderModal').classList.add('hidden');
+        }
+
+
+        // Ініціалізація при завантаженні сторінки
+        document.addEventListener('DOMContentLoaded', loadProductDetails);
+    </script>
+</body>
+</html>
